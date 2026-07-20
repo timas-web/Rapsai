@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapsų skaičiuoklė</title>
+</head>
+<body style="font-family: Arial; max-width: 500px; margin: 40px auto; padding: 20px;">
+
+<h1>Rapsų skaičiuoklė</h1>
+
+<p>A (g iš 200 g)</p>
+<input type="number" id="a">
+
+<p>B (g iš 10 g)</p>
+<input type="number" id="b">
+
+<br><br>
+
+<button onclick="skaiciuoti()">Skaičiuoti</button>
+
+<h2 id="rez"></h2>
+
+<script>
+function skaiciuoti() {
+    let a = parseFloat(document.getElementById("a").value);
+    let b = parseFloat(document.getElementById("b").value);
+
+    let rezultatas =
+        ((a / 200) * 100) +
+        ((((200 - a) * b) / 2000) * 100);
+
+    document.getElementById("rez").innerText =
+        rezultatas.toFixed(2) + "%";
+}
+</script>
+
+</body>
+</html>
