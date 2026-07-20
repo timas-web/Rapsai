@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14281d">
+
+  <title>Rapsų skaičiuoklė</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --card: rgba(24, 43, 32, 0.92);
+      --card-2: #1d3427;
+      --text: #f4f8f5;
+      --muted: #a9b8ae;
+      --accent: #75d68b;
+      --accent-dark: #183b23;
+      --border: rgba(255, 255, 255, 0.1);
+      --danger: #ffb4ab;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      padding:
+        max(24px, env(safe-area-inset-top))
+        18px
+        max(24px, env(safe-area-inset-bottom));
+
+      display: grid;
+      place-items: center;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(117, 214, 139, 0.18),
+          transparent 38%
+        ),
+        linear-gradient(
+          160deg,
+          #0b1510 0%,
+          #101d15 55%,
+          #09100c 100%
+        );
+    }
+
+    .app {
+      width: min(100%, 460px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 17px;
+
+      display: grid;
+      place-items: center;
+
+      font-size: 28px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #89e59d,
+          #4faf67
+        );
+
+      box-shadow:
+        0 12px 30px rgba(77, 179, 102, 0.24);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 8vw, 38px);
+      letter-spacing: -0.8px;
+    }
+
+    .subtitle {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .card {
+      padding: 22px;
+
+      border: 1px solid var(--border);
+      border-radius: 26px;
+
+      background: var(--card);
+
+      box-shadow:
+        0 26px 70px rgba(0, 0, 0, 0.32);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .field + .field {
+      margin-top: 17px;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+
+      margin-bottom: 8px;
+
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    label span {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      min-height: 58px;
+      padding: 0 16px;
+
+      border: 1px solid var(--border);
+      border-radius: 17px;
+
+      outline: none;
+
+      background: var(--card-2);
+      color: var(--text);
+
+      font: inherit;
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+
+      box-shadow:
+        0 0 0 4px rgba(117, 214, 139, 0.14);
+    }
+
+    input::placeholder {
+      color: #718078;
+    }
+
+    button {
+      width: 100%;
+      min-height: 58px;
+      margin-top: 22px;
+
+      border: 0;
+      border-radius: 18px;
+
+      color: #0d1a11;
+
+      background:
+        linear-gradient(
+          135deg,
+          #8be5a0,
+          #5fc878
+        );
+
+      font: inherit;
+      font-size: 18px;
+      font-weight: 800;
+
+      box-shadow:
+        0 14px 30px rgba(67, 173, 92, 0.25);
+
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.985);
+    }
+
+    .result {
+      display: none;
+
+      margin-top: 18px;
+      padding: 18px;
+
+      border:
+        1px solid rgba(117, 214, 139, 0.25);
+
+      border-radius: 18px;
+
+      background: var(--accent-dark);
+
+      text-align: center;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result-label {
+      margin-bottom: 16px;
+      color: #b9c9bf;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .result-item {
+      padding: 14px 0;
+    }
+
+    .result-item + .result-item {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .result-name {
+      color: #b9c9bf;
+      font-size: 15px;
+    }
+
+    .result-value {
+      margin-top: 5px;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .total .result-value {
+      color: var(--accent);
+      font-size: 42px;
+    }
+
+    .error {
+      min-height: 22px;
+      margin: 12px 3px -4px;
+
+      color: var(--danger);
+
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .hint {
+      margin: 16px 4px 0;
+
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.45;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+
+    <header class="brand">
+      <div class="logo">🌱</div>
+
+      <div>
+        <h1>Rapsų skaičiuoklė</h1>
+
+        <p class="subtitle">
+          Greitas šiukšlių kiekio apskaičiavimas
+        </p>
+      </div>
+    </header>
+
+    <section class="card">
+
+      <div class="field">
+        <label for="a">
+          Kiek gramų iš 200 g
+          <span>A</span>
+        </label>
+
+        <input
+          type="text"
+          inputmode="decimal"
+          id="a"
+          placeholder="Pvz. 5,844"
+        >
+      </div>
+
+      <div class="field">
+        <label for="b">
+          Kiek gramų iš 10 g
+          <span>B</span>
+        </label>
+
+        <input
+          type="text"
+          inputmode="decimal"
+          id="b"
+          placeholder="Pvz. 0,163"
+        >
+      </div>
+
+      <button
+        type="button"
+        onclick="skaiciuoti()"
+      >
+        Skaičiuoti
+      </button>
+
+      <div
+        class="error"
+        id="error"
+      ></div>
+
+      <div
+        class="result"
+        id="result"
+      >
+        <div class="result-label">
+          Rezultatai
+        </div>
+
+        <div class="result-item">
+          <div class="result-name">
+            Iš 200 g
+          </div>
+
+          <div
+            class="result-value"
+            id="rez200"
+          >
+            0,00 %
+          </div>
+        </div>
+
+        <div class="result-item">
+          <div class="result-name">
+            Iš 10 g
+          </div>
+
+          <div
+            class="result-value"
+            id="rez10"
+          >
+            0,00 %
+          </div>
+        </div>
+
+        <div class="result-item total">
+          <div class="result-name">
+            Iš viso
+          </div>
+
+          <div
+            class="result-value"
+            id="rezViso"
+          >
+            0,00 %
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <p class="hint">
+      Galima įvesti skaičius ir su kableliu, ir su tašku.
+    </p>
+
+  </main>
+
+  <script>
+    function nuskaityti(id) {
+      const value = document
+        .getElementById(id)
+        .value
+        .trim()
+        .replace(",", ".");
+
+      return Number.parseFloat(value);
+    }
+
+    function formatuotiProcentus(skaicius) {
+      return skaicius.toLocaleString(
+        "lt-LT",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      ) + " %";
+    }
+
+    function skaiciuoti() {
+      const a = nuskaityti("a");
+      const b = nuskaityti("b");
+
+      const error = document.getElementById("error");
+      const result = document.getElementById("result");
+
+      if (
+        !Number.isFinite(a) ||
+        !Number.isFinite(b)
+      ) {
+        error.textContent = "Įvesk abu skaičius.";
+        result.classList.remove("show");
+        return;
+      }
+
+      if (
+        a < 0 ||
+        a > 200 ||
+        b < 0 ||
+        b > 10
+      ) {
+        error.textContent =
+          "A turi būti nuo 0 iki 200, o B – nuo 0 iki 10.";
+
+        result.classList.remove("show");
+        return;
+      }
+
+      const is200g =
+        (a / 200) * 100;
+
+      const is10g =
+        (((200 - a) * b) / 2000) * 100;
+
+      const viso =
+        is200g + is10g;
+
+      error.textContent = "";
+
+      document
+        .getElementById("rez200")
+        .textContent =
+          formatuotiProcentus(is200g);
+
+      document
+        .getElementById("rez10")
+        .textContent =
+          formatuotiProcentus(is10g);
+
+      document
+        .getElementById("rezViso")
+        .textContent =
+          formatuotiProcentus(viso);
+
+      result.classList.add("show");
+    }
+
+    document.addEventListener(
+      "keydown",
+      function(event) {
+        if (event.key === "Enter") {
+          skaiciuoti();
+        }
+      }
+    );
+  </script>
+</body>
+</html>
