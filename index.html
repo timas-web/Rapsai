@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rapsų skaičiuoklė</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #101d15;
+      color: white;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .card {
+      background: #1d3427;
+      padding: 20px;
+      border-radius: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #294535;
+      color: white;
+      font-size: 18px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #75d68b;
+      color: black;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+      background: #183b23;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .show {
+      display: block;
+    }
+
+    .result-title {
+      color: #b9c9bf;
+      margin-bottom: 20px;
+    }
+
+    .result-item {
+      margin-bottom: 20px;
+    }
+
+    .name {
+      color: #b9c9bf;
+      font-size: 16px;
+    }
+
+    .value {
+      font-size: 32px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .total {
+      color: #75d68b;
+      font-size: 40px;
+    }
+
+    .error {
+      color: #ff8080;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>🌱 Rapsų skaičiuoklė</h1>
+
+    <div class="card">
+
+      <label>Kiek gramų iš 200 g</label>
+      <input
+        type="text"
+        id="a"
+        placeholder="Pvz. 5,844"
+      >
+
+      <label>Kiek gramų iš 10 g</label>
+      <input
+        type="text"
+        id="b"
+        placeholder="Pvz. 0,163"
+      >
+
+      <button onclick="skaiciuoti()">
+        Skaičiuoti
+      </button>
+
+      <div class="error" id="error"></div>
+
+      <div class="result" id="result">
+
+        <div class="result-title">
+          Rezultatai
+        </div>
+
+        <div class="result-item">
+          <div class="name">Iš 200 g</div>
+          <div class="value" id="rez200">0,0 %</div>
+        </div>
+
+        <div class="result-item">
+          <div class="name">Iš 10 g</div>
+          <div class="value" id="rez10">0,0 %</div>
+        </div>
+
+        <div class="result-item">
+          <div class="name">Iš viso</div>
+          <div class="value total" id="rezViso">0,0 %</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function nuskaityti(id) {
+      const value = document
+        .getElementById(id)
+        .value
+        .replace(",", ".");
+
+      return parseFloat(value);
+    }
+
+    function formatas(skaicius) {
+      return skaicius.toLocaleString(
+        "lt-LT",
+        {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1
+        }
+      ) + " %";
+    }
+
+    function skaiciuoti() {
+
+      const a = nuskaityti("a");
+      const b = nuskaityti("b");
+
+      const error = document.getElementById("error");
+      const result = document.getElementById("result");
+
+      if (isNaN(a) || isNaN(b)) {
+        error.textContent = "Įveskite abu skaičius.";
+        result.classList.remove("show");
+        return;
+      }
+
+      error.textContent = "";
+
+      const is200g = (a / 200) * 100;
+
+      const is10g = (((200 - a) * b) / 2000) * 100;
+
+      const viso = is200g + is10g;
+
+      document.getElementById("rez200").textContent =
+        formatas(is200g);
+
+      document.getElementById("rez10").textContent =
+        formatas(is10g);
+
+      document.getElementById("rezViso").textContent =
+        formatas(viso);
+
+      result.classList.add("show");
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        skaiciuoti();
+      }
+    });
+
+  </script>
+
+</body>
+</html>
